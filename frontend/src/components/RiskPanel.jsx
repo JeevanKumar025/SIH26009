@@ -41,7 +41,7 @@ function RiskPanel() {
       <ul style={{ margin: 0, paddingLeft: 18 }}>
         {contributors.map((c, i) => (
           <li key={i} style={{ fontSize: 13, marginBottom: 4 }}>
-            ⚠ {c.cause} — {c.importance.toFixed(1)}%
+            ⚠ {c.cause} — {c.contribution_pct.toFixed(1)}%
           </li>
         ))}
       </ul>
