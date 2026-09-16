@@ -74,14 +74,17 @@ Satellite (Sentinel-2) + Geological + Weather + Production + Equipment Data
 | Data | Source | Type |
 |---|---|---|
 | Satellite bands (B2,B3,B4,B8,B11,B12) + NDVI + NDMI | Sentinel-2 via Google Earth Engine | **Real** |
-| Geological favorability layer | Synthetic, anchored to verified real mine coordinates | Synthetic (clearly labeled) |
-| Rainfall, temperature | Open-Meteo historical API | **Real** |
-| Production / equipment downtime / blasting delay | Generated synthetic dataset, statistically correlated (rainfall → downtime → shortfall) | Synthetic (clearly labeled) |
+| Geological favorability layer (sub-surface proxy) | Synthetic, anchored to verified real mine coordinates | Synthetic (clearly labeled) |
+| Rainfall, land surface temperature (max/min) | Open-Meteo historical API — **fetched AND used directly as model features** | **Real** |
+| Soil moisture | Synthetic AR(1) process driven by real rainfall (rises after rain, decays otherwise) — no free real-time source available for this exact point | Synthetic (clearly labeled, physically realistic) |
+| Production / equipment downtime / blasting delay | Generated synthetic dataset, statistically correlated with real rainfall + temperature (weather → downtime → shortfall) | Synthetic (clearly labeled) |
 
 We are transparent about this split — real MOIL operational data isn't
 publicly available, so synthetic data was used for anything beyond satellite
 and public weather sources, exactly as expected for a prototype-stage
-hackathon submission.
+hackathon submission. Note: rainfall and temperature are genuinely fetched
+from Open-Meteo **and** flow into the production forecasting model as real
+features — not just displayed separately.
 
 ---
 
@@ -98,9 +101,10 @@ hackathon submission.
   geological reserve figure
 
 ### B. Production Shortfall Prediction
-- Random Forest regressor trained on historical production + rainfall +
-  equipment downtime + blasting delay, using lag features and a time-based
-  train/test split (not random split — avoids data leakage in time series)
+- Random Forest regressor trained on historical production + **real rainfall**
+  + **real land surface temperature** + synthetic soil moisture + equipment
+  downtime + blasting delay, using lag features and a time-based train/test
+  split (not random split — avoids data leakage in time series)
 - Outputs next-period production forecast vs target, and expected shortfall
 
 ### C. Explainable Risk Scoring
@@ -108,7 +112,8 @@ hackathon submission.
 - Risk level: LOW / MEDIUM / HIGH
 - **Risk contributors are the model's actual feature importances** — not
   hardcoded numbers — so every percentage shown is traceable back to what the
-  model learned
+  model learned, including rainfall, temperature, and soil moisture
+  contributions specifically
 
 ### D. Recommendation Engine
 - Rule-based (deterministic, demo-safe — no LLM variability)
@@ -118,10 +123,12 @@ hackathon submission.
   reschedule blasting, prioritize high-probability zones
 
 ### E. Interactive Dashboard
-- Summary cards: Reserve area, Estimated tonnage, Shortfall, Risk level
+- Summary cards: Reserve area, Estimated tonnage, Avg NDVI (high zone),
+  Shortfall, Risk level
 - Interactive map (Leaflet) — pixel-level manganese probability, color-coded
 - Production trend chart — actual vs target, last 60 days
-- Risk panel — risk level + explainable contributor breakdown
+- Risk panel — risk level + explainable contributor breakdown (now includes
+  rainfall, temperature, and soil moisture as named contributors)
 - Recommendations panel — prioritized corrective actions with reasons
 
 ---
@@ -130,23 +137,35 @@ hackathon submission.
 
 | Component | Real | Simulated |
 |---|---|---|
-| Satellite imagery & indices | ✅ | |
-| Weather (rainfall, temperature) | ✅ | |
+| Satellite imagery & indices (bands, NDVI, NDMI) | ✅ | |
+| Weather — rainfall & land surface temperature | ✅ (fetched **and** used as model features) | |
 | Mine location (Dongri Buzurg) | ✅ | |
-| Geological sub-surface layer | | ✅ (synthetic, anchored to real mine) |
-| Production/equipment/blasting records | | ✅ (statistically realistic synthetic data) |
+| Soil moisture | | ✅ (rainfall-driven synthetic process, physically realistic) |
+| Geological sub-surface layer | | ✅ (synthetic proxy, anchored to real mine) |
+| Equipment downtime / blasting delay records | | ✅ (statistically realistic synthetic data) |
+
+All four satellite/space inputs named in the problem statement — rainfall,
+soil moisture, vegetation index (NDVI), and land surface temperature — are
+now represented as actual model features, not just fetched and left unused.
 
 ---
 
 ## 7. Known Limitations / Future Scope
 
-- Sub-surface geological indicators are synthetic — real drilling logs / GSI
-  survey layers would directly replace this input with no architecture change
-- Weather features currently use rainfall as the primary driver; soil
-  moisture and land surface temperature (also named in the problem statement)
-  are identified as a near-term addition
+- **Sub-surface geological indicators are synthetic** (a proxy layer anchored
+  to the real mine coordinate, not derived from actual drilling/survey data).
+  This is the most significant simplification in the prototype — real GSI
+  survey layers or drilling logs would directly replace this input with no
+  change to the model architecture
+- Soil moisture is a physically-motivated synthetic process (rainfall-driven
+  decay model), since no free real-time soil moisture source exists for this
+  exact point — a real dataset (e.g. SMAP) would be a direct drop-in
+  replacement
 - No real-time IoT/equipment telemetry — designed to be added as a live data
   feed replacing the static production CSV
+- Equipment performance is represented as a single downtime metric, not
+  per-equipment granularity (utilization %, maintenance history) — a
+  reasonable next step for a fuller deployment
 - Reserve tonnage uses stated assumptions (ore thickness, density) rather
   than measured values — intentional and disclosed, standard for a
   preliminary AI estimate

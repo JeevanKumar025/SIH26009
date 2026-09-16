@@ -18,7 +18,8 @@ joblib==1.4.2
 fastapi==0.111.0
 uvicorn==0.30.1
 
-# --- Weather data fetching (if calling Open-Meteo via requests) ---
+# --- Weather data fetching (Open-Meteo — rainfall + temperature, now
+#     actively used as production model features, not just fetched) ---
 requests==2.32.3
 
 # ------------------------------------------------------------------
