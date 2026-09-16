@@ -1,0 +1,34 @@
+# VantaWenge — SIH26009 Prototype
+# Python dependencies (backend + AI/ML pipeline)
+# Install with: pip install -r requirements.txt
+
+# --- Data processing ---
+pandas==2.2.2
+numpy==1.26.4
+scipy==1.13.1
+
+# --- Satellite / geospatial ---
+rasterio==1.3.10
+
+# --- Machine learning ---
+scikit-learn==1.5.0
+joblib==1.4.2
+
+# --- Backend API ---
+fastapi==0.111.0
+uvicorn==0.30.1
+
+# --- Weather data fetching (if calling Open-Meteo via requests) ---
+requests==2.32.3
+
+# ------------------------------------------------------------------
+# Frontend dependencies (Node.js / npm — NOT installed via this file)
+# Run inside /frontend: npm install
+#
+#   react
+#   react-dom
+#   leaflet
+#   react-leaflet
+#   recharts
+#   vite
+# ------------------------------------------------------------------
