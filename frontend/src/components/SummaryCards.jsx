@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-function SummaryCards({ mineId }) {
+function SummaryCards() {
   const [reserve, setReserve] = useState(null);
   const [risk, setRisk] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/reserve?mine_id=${mineId}`).then(r => r.json()).then(setReserve);
-    fetch(`http://localhost:8000/api/risk?mine_id=${mineId}`).then(r => r.json()).then(setRisk);
-  }, [mineId]);
+    fetch("http://localhost:8000/api/reserve").then(r => r.json()).then(setReserve);
+    fetch("http://localhost:8000/api/risk").then(r => r.json()).then(setRisk);
+  }, []);
 
   if (!reserve || !risk) return <p>Loading...</p>;
 

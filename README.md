@@ -4,7 +4,7 @@
 
 ---
 
-## 1. Problem Statement Summary
+## 1. Problem Statement Summary:
 
 MOIL Limited, India's largest manganese ore producer, currently relies on manual
 surveys, drilling results, and production records for reserve estimation and
@@ -26,11 +26,8 @@ equipment performance, and satellite/space technology inputs to:
 An end-to-end pipeline: **Satellite + Weather + Production data → AI models →
 Explainable risk & recommendations → Interactive dashboard.**
 
-Current processed prototype: **Dongri Buzurg manganese mine, Bhandara district,
-Maharashtra** (real MOIL-belt mine location — 21.55°N, 79.69°E), AOI ≈ 41 km².
-The code is mine-scoped: `backend/mines.json` is the register of supported
-mines. A mine is shown as available only after its own inputs and processed
-outputs exist; the app never reuses Dongri Buzurg results for another mine.
+Study area: **Dongri Buzurg manganese mine, Bhandara district, Maharashtra**
+(real, verified MOIL-belt mine location — 21.55°N, 79.69°E), AOI ≈ 41 km².
 
 ```
 Satellite (Sentinel-2) + Geological + Weather + Production + Equipment Data
@@ -219,8 +216,8 @@ ManganeseMining/
 
 **Backend:**
 ```bash
-pip install -r requirements.txt
 cd backend
+pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
@@ -232,45 +229,6 @@ npm run dev
 ```
 
 Dashboard: `http://localhost:5173` (Vite default) · API: `http://localhost:8000`
-
-### Add and process the next mine (beginner-friendly sequence)
-
-The UI already lists registered mines. `Sitapatore/Sukli` and `Tirodi` are
-intentionally marked `not_processed`: their coordinates are only a registry
-entry, not evidence that they have been analysed.
-
-1. Confirm the mine record in `backend/mines.json`. Add a new record only when
-   you have a reliable location/area of interest.
-2. Create a **real** Sentinel-2 feature GeoTIFF for that mine and save it as
-   `data/satellite/<mine_id>_features.tif`. It must contain the same eight
-   bands used by the current Dongri file, in this order:
-   `B2, B3, B4, B8, B11, B12, NDVI, NDMI`.
-3. Fetch real public weather, then generate the clearly labelled synthetic
-   geology/operations proxies:
-
-   ```bash
-   python run_pipeline.py --mine-id sitapatore_sukli --refresh-weather --regenerate-synthetic-inputs
-   ```
-
-   The command stops instead of fabricating satellite imagery when the GeoTIFF
-   is missing. It writes all model outputs to
-   `data/processed/sitapatore_sukli/` and models to
-   `models/sitapatore_sukli/`.
-4. Check the generated CSVs, then change that mine's `status` in `mines.json`
-   from `not_processed` to `active`. Restart the backend and select it in the
-   dashboard.
-
-For Dongri Buzurg, its original committed CSVs remain supported for backwards
-compatibility. Running `python run_pipeline.py --mine-id dongri_buzurg` creates
-the new mine-scoped output folder without changing the original analysis logic.
-
-### Honest demo wording
-
-Say “satellite-driven **manganese probability zones** and an **AI-based
-preliminary estimate**,” never “confirmed reserves.” The geology label used to
-train the reserve model is synthetic proxy ground truth, so it cannot certify
-an ore body. The weather and satellite inputs remain distinct real sources;
-soil moisture and operational records are disclosed synthetic inputs.
 
 ---
 

@@ -7,8 +7,7 @@
     "lat": 21.5500,
     "lon": 79.6941,
     "type": "opencast",
-    "status": "active",
-    "data_note": "Processed prototype data is available. Satellite and public weather inputs are real; geological and operational inputs are synthetic proxies."
+    "status": "active"
   },
   {
     "id": "sitapatore_sukli",
@@ -18,8 +17,7 @@
     "lat": 21.6664,
     "lon": 79.6778,
     "type": "opencast",
-    "status": "not_processed",
-    "data_note": "Location is registered, but this mine has no mine-specific satellite and processed pipeline outputs yet."
+    "status": "not_processed"
   },
   {
     "id": "tirodi",
@@ -29,7 +27,6 @@
     "lat": 21.6831,
     "lon": 79.7331,
     "type": "opencast",
-    "status": "not_processed",
-    "data_note": "Location is registered, but this mine has no mine-specific satellite and processed pipeline outputs yet."
+    "status": "not_processed"
   }
 ]

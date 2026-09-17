@@ -6,14 +6,14 @@ function riskColor(level) {
   return "#16a34a";
 }
 
-function RiskPanel({ mineId }) {
+function RiskPanel() {
   const [risk, setRisk] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/risk?mine_id=${mineId}`)
+    fetch("http://localhost:8000/api/risk")
       .then(r => r.json())
       .then(setRisk);
-  }, [mineId]);
+  }, []);
 
   if (!risk) return <p>Loading risk data...</p>;
 

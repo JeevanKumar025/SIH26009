@@ -2,21 +2,9 @@ import rasterio
 import numpy as np
 import pandas as pd
 from scipy.interpolate import griddata
-import argparse
-from pipeline_paths import ROOT, input_path, processed_dir
-
-parser = argparse.ArgumentParser(description="Create reserve features for one mine")
-parser.add_argument("--mine-id", default="dongri_buzurg")
-args = parser.parse_args()
-mine_id = args.mine_id
-satellite_file = ROOT / "data" / "satellite" / f"{mine_id}_features.tif"
-if not satellite_file.exists() and mine_id == "dongri_buzurg":
-    satellite_file = ROOT / "data" / "satellite" / "dongri_buzurg_features.tif"
-if not satellite_file.exists():
-    raise FileNotFoundError(f"Missing satellite GeoTIFF: {satellite_file}")
 
 # 1. Read satellite GeoTIFF
-with rasterio.open(satellite_file) as src:
+with rasterio.open("data/satellite/dongri_buzurg_features.tif") as src:
     bands = src.read()  # shape: (8, height, width) -> B2,B3,B4,B8,B11,B12,NDVI,NDMI
     transform = src.transform
     height, width = src.height, src.width
@@ -28,7 +16,7 @@ pixel_lon = np.array(xs)
 pixel_lat = np.array(ys)
 
 # 3. Load geology points
-geo = pd.read_csv(input_path("geological", mine_id, "geology_synthetic.csv"))
+geo = pd.read_csv("data/geological/geology_synthetic.csv")
 
 # 4. Interpolate geology onto satellite pixel grid
 geology_grid = griddata(
@@ -47,7 +35,7 @@ data['latitude'] = pixel_lat.flatten()
 data['geology_favorability'] = geology_grid.flatten()
 
 df = pd.DataFrame(data)
-df.to_csv(processed_dir(mine_id) / "feature_dataset.csv", index=False)
+df.to_csv("data/processed/feature_dataset.csv", index=False)
 
 print("Feature dataset created:", df.shape)
 print(df.head())

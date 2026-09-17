@@ -4,16 +4,9 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, r2_score
 import joblib
-import argparse
-from pipeline_paths import input_path, processed_dir, model_path
-
-parser = argparse.ArgumentParser(description="Train production proxy model for one mine")
-parser.add_argument("--mine-id", default="dongri_buzurg")
-args = parser.parse_args()
-out = processed_dir(args.mine_id)
 
 # 1. Load production dataset (now with real weather + soil moisture)
-df = pd.read_csv(input_path("production", args.mine_id, "production_data.csv"))
+df = pd.read_csv("data/production/production_data.csv")
 df['date'] = pd.to_datetime(df['date'])
 df = df.sort_values('date').reset_index(drop=True)
 
@@ -61,13 +54,13 @@ print(f"Target production               : {target_production:.0f} T")
 print(f"Expected shortfall              : {max(0, target_production - next_prediction):.0f} T")
 
 # 8. Save
-joblib.dump(model, model_path(args.mine_id, "production_model.pkl"))
-df.to_csv(out / "production_features.csv", index=False)
+joblib.dump(model, "models/production_model.pkl")
+df.to_csv("data/processed/production_features.csv", index=False)
 
 forecast_summary = pd.DataFrame([{
     "predicted_production_t": round(next_prediction, 0),
     "target_production_t": round(target_production, 0),
     "expected_shortfall_t": round(max(0, target_production - next_prediction), 0)
 }])
-forecast_summary.to_csv(out / "production_forecast.csv", index=False)
+forecast_summary.to_csv("data/processed/production_forecast.csv", index=False)
 print("\nSaved: production_model.pkl, production_features.csv, production_forecast.csv")

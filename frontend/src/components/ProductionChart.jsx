@@ -3,18 +3,18 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from "recharts";
 
-function ProductionChart({ mineId }) {
+function ProductionChart() {
   const [history, setHistory] = useState([]);
   const [forecast, setForecast] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/production?mine_id=${mineId}`)
+    fetch("http://localhost:8000/api/production")
       .then(r => r.json())
       .then(data => {
         setHistory(data.history);
         setForecast(data.forecast);
       });
-  }, [mineId]);
+  }, []);
 
   if (history.length === 0) return <p>Loading production data...</p>;
 

@@ -1,20 +1,10 @@
 import pandas as pd
 import numpy as np
-import argparse
-from pathlib import Path
-import sys
-
-sys.path.append(str(Path(__file__).resolve().parents[2]))
-from pipeline_paths import input_path
-
-parser = argparse.ArgumentParser(description="Generate synthetic operational data from one mine's real weather")
-parser.add_argument("--mine-id", default="dongri_buzurg")
-args = parser.parse_args()
 
 np.random.seed(42)
 
 # 1. Load REAL weather data (Open-Meteo) instead of generating fake rainfall
-weather = pd.read_csv(input_path("weather", args.mine_id, "weather_dongribuzurg.csv"))
+weather = pd.read_csv("data/weather/weather_dongribuzurg.csv")
 weather['time'] = pd.to_datetime(weather['time'])
 weather = weather.rename(columns={
     'time': 'date',
@@ -67,11 +57,7 @@ df = pd.DataFrame({
     'target_production_t': target_production,
     'actual_production_t': actual_production.round(1)
 })
-output = input_path("production", args.mine_id, "production_data.csv")
-output.parent.mkdir(parents=True, exist_ok=True)
-if args.mine_id != "dongri_buzurg":
-    output = output.with_name(f"{args.mine_id}.csv")
-df.to_csv(output, index=False)
+df.to_csv('data/production/production_data.csv', index=False)
 
-print(f"{output.name} regenerated using REAL weather + synthetic soil moisture")
+print("production_data.csv regenerated using REAL weather + synthetic soil moisture")
 print(df.head())
