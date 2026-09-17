@@ -42,7 +42,7 @@ df = pd.DataFrame({
 })
 
 # Save CSV
-df.to_csv("geology_synthetic.csv", index=False)
+df.to_csv("data/geological/geology_synthetic.csv", index=False)
 
 print("Geological dataset created successfully!")
 print(df.head())
