@@ -8,7 +8,7 @@ data = response.json()
 
 df = pd.DataFrame(data["daily"])
 
-df.to_csv("weather_dongribuzurg.csv", index=False)
+df.to_csv("data/weather/weather_dongribuzurg.csv", index=False)
 
 print("Weather data saved successfully!")
 print(df.head())
