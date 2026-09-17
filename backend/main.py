@@ -23,10 +23,25 @@ def get_reserve():
 @app.get("/api/reserve-map")
 def get_reserve_map():
     df = pd.read_csv(DATA / "reserve_probability_map.csv")
-    # downsample for a snappy demo (map doesn't need every pixel)
-    if len(df) > 5000:
-        df = df.sample(5000, random_state=42)
-    return df.to_dict(orient="records")
+    # Regular lat/lon grid -> return as a compact raster grid instead of
+    # per-point records, so the frontend can render continuous probability
+    # zones (an image overlay) instead of individual dot markers.
+    nx = df["longitude"].nunique()
+    ny = df["latitude"].nunique()
+
+    # Sort so the flattened array reads top-to-bottom (north -> south),
+    # left-to-right (west -> east), matching standard image row order.
+    grid = df.sort_values(["latitude", "longitude"], ascending=[False, True])
+
+    return {
+        "nx": int(nx),
+        "ny": int(ny),
+        "lon_min": float(df["longitude"].min()),
+        "lon_max": float(df["longitude"].max()),
+        "lat_min": float(df["latitude"].min()),
+        "lat_max": float(df["latitude"].max()),
+        "probability": grid["manganese_probability"].round(4).tolist(),
+    }
 
 @app.get("/api/production")
 def get_production():
