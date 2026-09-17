@@ -7,18 +7,18 @@ function color(p) {
   return "green";
 }
 
-function ReserveMap() {
+function ReserveMap({ mineId, mine }) {
   const [points, setPoints] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/reserve-map").then(r => r.json()).then(setPoints);
-  }, []);
+    fetch(`http://localhost:8000/api/reserve-map?mine_id=${mineId}`).then(r => r.json()).then(setPoints);
+  }, [mineId]);
 
   if (points.length === 0) return <p>Loading map...</p>;
 
   return (
   <div style={{ height: 400, width: "100%" }}>
-    <MapContainer center={[21.55, 79.69]} zoom={13} style={{ height: "100%", width: "100%" }}>
+    <MapContainer key={mineId} center={[mine.lat, mine.lon]} zoom={13} style={{ height: "100%", width: "100%" }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {points.map((p, i) => (
         <CircleMarker

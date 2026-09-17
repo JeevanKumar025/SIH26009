@@ -4,9 +4,16 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 import joblib
+import argparse
+from pipeline_paths import processed_dir, model_path
+
+parser = argparse.ArgumentParser(description="Run reserve proxy model for one mine")
+parser.add_argument("--mine-id", default="dongri_buzurg")
+args = parser.parse_args()
+out = processed_dir(args.mine_id)
 
 # 1. Load merged feature dataset from Part 3
-df = pd.read_csv("data/processed/feature_dataset.csv")
+df = pd.read_csv(out / "feature_dataset.csv")
 
 # 2. Derive training labels from geology_favorability (proxy ground truth)
 #    threshold chosen so ~top favorable zone = positive class
@@ -46,9 +53,9 @@ df['risk_class'] = df['manganese_probability'].apply(classify)
 
 # 8. Save outputs
 df[['longitude','latitude','manganese_probability','risk_class']].to_csv(
-    "data/processed/reserve_probability_map.csv", index=False
+    out / "reserve_probability_map.csv", index=False
 )
-joblib.dump(model, "models/reserve_model.pkl")
+joblib.dump(model, model_path(args.mine_id, "reserve_model.pkl"))
 
 print("Saved: reserve_probability_map.csv, reserve_model.pkl")
 print(df['risk_class'].value_counts())

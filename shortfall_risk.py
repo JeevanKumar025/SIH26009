@@ -1,10 +1,17 @@
 import pandas as pd
 import numpy as np
 import joblib
+import argparse
+from pipeline_paths import processed_dir, model_path
 
-model = joblib.load("models/production_model.pkl")
-df = pd.read_csv("data/processed/production_features.csv")
-forecast = pd.read_csv("data/processed/production_forecast.csv").iloc[0]
+parser = argparse.ArgumentParser(description="Calculate production risk for one mine")
+parser.add_argument("--mine-id", default="dongri_buzurg")
+args = parser.parse_args()
+out = processed_dir(args.mine_id)
+
+model = joblib.load(model_path(args.mine_id, "production_model.pkl"))
+df = pd.read_csv(out / "production_features.csv")
+forecast = pd.read_csv(out / "production_forecast.csv").iloc[0]
 
 feature_cols = [
     'rainfall_mm', 'temp_max_c', 'soil_moisture_pct',
@@ -66,8 +73,8 @@ risk_summary = pd.DataFrame([{
     "shortfall_probability_pct": round(shortfall_probability, 0),
     "risk_level": risk
 }])
-risk_summary.to_csv("data/processed/shortfall_risk.csv", index=False)
+risk_summary.to_csv(out / "shortfall_risk.csv", index=False)
 contrib_pct.reset_index().rename(columns={"importance": "contribution_pct"}).to_csv(
-    "data/processed/risk_contributors.csv", index=False
+    out / "risk_contributors.csv", index=False
 )
 print("\nSaved: shortfall_risk.csv, risk_contributors.csv")

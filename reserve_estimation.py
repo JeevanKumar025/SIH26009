@@ -1,10 +1,17 @@
 import pandas as pd
+import argparse
+from pipeline_paths import processed_dir
+
+parser = argparse.ArgumentParser(description="Create preliminary reserve summary for one mine")
+parser.add_argument("--mine-id", default="dongri_buzurg")
+args = parser.parse_args()
+out = processed_dir(args.mine_id)
 
 # 1a. Load Part 4 output
-df = pd.read_csv("data/processed/reserve_probability_map.csv")
+df = pd.read_csv(out / "reserve_probability_map.csv")
 
 # 1b. Bring in NDVI from the feature dataset (join on coordinates)
-features = pd.read_csv("data/processed/feature_dataset.csv")[
+features = pd.read_csv(out / "feature_dataset.csv")[
     ['longitude', 'latitude', 'NDVI']
 ]
 df = df.merge(features, on=['longitude', 'latitude'], how='left')
@@ -53,5 +60,5 @@ summary = pd.DataFrame([{
     "confidence_pct": HIGH_ZONE_CONFIDENCE * 100,
     "avg_ndvi_high_zone": round(avg_ndvi_high_zone, 3)
 }])
-summary.to_csv("data/processed/reserve_summary.csv", index=False)
+summary.to_csv(out / "reserve_summary.csv", index=False)
 print("\nSaved: reserve_summary.csv")

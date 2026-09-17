@@ -6,14 +6,14 @@ function priorityColor(p) {
   return "#16a34a";
 }
 
-function RecommendationsPanel() {
+function RecommendationsPanel({ mineId }) {
   const [recs, setRecs] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/recommendations")
+    fetch(`http://localhost:8000/api/recommendations?mine_id=${mineId}`)
       .then(r => r.json())
       .then(setRecs);
-  }, []);
+  }, [mineId]);
 
   if (recs.length === 0) return <p>Loading recommendations...</p>;
 

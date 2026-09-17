@@ -1,10 +1,17 @@
 import pandas as pd
+import argparse
+from pipeline_paths import processed_dir
+
+parser = argparse.ArgumentParser(description="Generate recommendations for one mine")
+parser.add_argument("--mine-id", default="dongri_buzurg")
+args = parser.parse_args()
+out = processed_dir(args.mine_id)
 
 # 1. Load all upstream outputs
-risk = pd.read_csv("data/processed/shortfall_risk.csv").iloc[0]
-contrib = pd.read_csv("data/processed/risk_contributors.csv")
-reserve = pd.read_csv("data/processed/reserve_summary.csv").iloc[0]
-prod_features = pd.read_csv("data/processed/production_features.csv")
+risk = pd.read_csv(out / "shortfall_risk.csv").iloc[0]
+contrib = pd.read_csv(out / "risk_contributors.csv")
+reserve = pd.read_csv(out / "reserve_summary.csv").iloc[0]
+prod_features = pd.read_csv(out / "production_features.csv")
 
 latest = prod_features.iloc[-1]
 
@@ -60,7 +67,7 @@ rec_df = pd.DataFrame(recommendations)
 rec_df['sort_key'] = rec_df['priority'].map(priority_order)
 rec_df = rec_df.sort_values('sort_key').drop(columns='sort_key')
 
-rec_df.to_csv("data/processed/recommendations.csv", index=False)
+rec_df.to_csv(out / "recommendations.csv", index=False)
 print("=== RECOMMENDED ACTIONS ===")
 print(rec_df.to_string(index=False))
 print("\nSaved: recommendations.csv")

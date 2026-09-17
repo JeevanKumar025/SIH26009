@@ -1,13 +1,25 @@
 import numpy as np
 import pandas as pd
+import argparse
+from pathlib import Path
+import sys
+
+sys.path.append(str(Path(__file__).resolve().parents[2]))
+from pipeline_paths import get_mine, input_path
+
+parser = argparse.ArgumentParser(description="Generate a clearly synthetic geology proxy for one mine")
+parser.add_argument("--mine-id", default="dongri_buzurg")
+args = parser.parse_args()
+mine = get_mine(args.mine_id)
 
 np.random.seed(42)
 
-# Corrected Dongri Buzurg study area
-min_lon = 79.66
-max_lon = 79.72
-min_lat = 21.52
-max_lat = 21.58
+# Approximate AOI around the registered mine coordinate. This is a synthetic
+# proxy and must be replaced by drilling/survey layers in a real deployment.
+min_lon = mine['lon'] - 0.03
+max_lon = mine['lon'] + 0.03
+min_lat = mine['lat'] - 0.03
+max_lat = mine['lat'] + 0.03
 
 # Generate synthetic points
 num_points = 10000
@@ -15,8 +27,7 @@ num_points = 10000
 lon = np.random.uniform(min_lon, max_lon, num_points)
 lat = np.random.uniform(min_lat, max_lat, num_points)
 
-# Verified Dongri Buzurg MOIL mine coordinate
-known_mines = [(79.68289, 21.54866)]
+known_mines = [(mine['lon'], mine['lat'])]
 
 
 def geology_score(lon, lat):
@@ -42,8 +53,12 @@ df = pd.DataFrame({
 })
 
 # Save CSV
-df.to_csv("data/geological/geology_synthetic.csv", index=False)
+output = input_path("geological", args.mine_id, "geology_synthetic.csv")
+output.parent.mkdir(parents=True, exist_ok=True)
+if args.mine_id != "dongri_buzurg":
+    output = output.with_name(f"{args.mine_id}.csv")
+df.to_csv(output, index=False)
 
-print("Geological dataset created successfully!")
+print(f"Synthetic geological proxy saved: {output}")
 print(df.head())
 print("Rows:", len(df))
