@@ -1,0 +1,32 @@
+[
+  {
+    "id": "dongri_buzurg",
+    "name": "Dongri Buzurg Mine",
+    "district": "Bhandara",
+    "state": "Maharashtra",
+    "lat": 21.5500,
+    "lon": 79.6941,
+    "type": "opencast",
+    "status": "active"
+  },
+  {
+    "id": "sitapatore_sukli",
+    "name": "Sitapatore/Sukli Mine",
+    "district": "Balaghat",
+    "state": "Madhya Pradesh",
+    "lat": 21.6664,
+    "lon": 79.6778,
+    "type": "opencast",
+    "status": "not_processed"
+  },
+  {
+    "id": "tirodi",
+    "name": "Tirodi Mine (South Tirodi)",
+    "district": "Balaghat",
+    "state": "Madhya Pradesh",
+    "lat": 21.6831,
+    "lon": 79.7331,
+    "type": "opencast",
+    "status": "not_processed"
+  }
+]

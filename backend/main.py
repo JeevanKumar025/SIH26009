@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from pathlib import Path
+import json
 
 
 app = FastAPI(title="VantaWenge API")
@@ -44,3 +45,8 @@ def get_risk():
 @app.get("/api/recommendations")
 def get_recommendations():
     return pd.read_csv(DATA / "recommendations.csv").to_dict(orient="records")
+
+@app.get("/api/mines")
+def get_mines():
+    with open("mines.json") as f:
+        return json.load(f)
