@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from pathlib import Path
 import json
-
+from pydantic import BaseModel
+import predictor
 
 app = FastAPI(title="VantaWenge API")
 
@@ -50,3 +51,17 @@ def get_recommendations():
 def get_mines():
     with open("mines.json") as f:
         return json.load(f)
+
+class ManagerInput(BaseModel):
+    mine_id: str = "dongri_buzurg"
+    downtime_hrs: float
+    blasting_delay_hrs: float
+    soil_moisture_pct: float
+    target_production_t: float
+
+@app.post("/api/predict")
+def predict(input: ManagerInput):
+    return predictor.predict(
+        input.mine_id, input.downtime_hrs, input.blasting_delay_hrs,
+        input.soil_moisture_pct, input.target_production_t
+    )
