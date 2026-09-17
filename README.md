@@ -4,7 +4,7 @@
 
 ---
 
-## 1. Problem Statement Summary
+## 1. Problem Statement Summary:
 
 MOIL Limited, India's largest manganese ore producer, currently relies on manual
 surveys, drilling results, and production records for reserve estimation and
